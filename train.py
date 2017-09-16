@@ -49,6 +49,7 @@ def main():
     os.remove('dataset/cifar-10-python.tar.gz') if os.path.exists('dataset/cifar-10-python.tar.gz') else None
     shutil.rmtree('dataset/cifar-10-batches-py', ignore_errors=True)
 
+    # (Download CIFAR100 dataset)
     if not os.path.exists('dataset/cifar-100-gray.npy'):
         url = 'https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz'
         response = urllib.request.urlopen(url)
@@ -74,7 +75,7 @@ def main():
     shutil.rmtree('dataset/cifar-100-python', ignore_errors=True)
     
     # Create samples.
-    train = np.load('dataset/cifar-100-gray.npy').reshape((-1, 1, 32, 32))
+    train = np.load('dataset/cifar-10-gray.npy').reshape((-1, 1, 32, 32))   # cifar-10 or cifar-100
     train = np.random.permutation(train)
     validation = train[0:100]
 
