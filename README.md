@@ -1,5 +1,5 @@
 # topographic-ica-cifar10
-CIFAR10データセットを使用した再構成型 Topographic ICAによるトポグラフィック・マッピングの再現です。
+CIFAR10データセットを使用した再構成型 Topographic ICAによる特徴表現の学習の可視化です。
 
 ## 実行方法
 `python train.py`  
