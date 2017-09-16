@@ -3,7 +3,6 @@ import chainer.functions as F
 import chainer.links as L
 import chainer.cuda
 import datetime
-import gzip
 import numpy as np
 import os
 import pickle
@@ -49,9 +48,33 @@ def main():
         np.save('dataset/cifar-10-gray', train)
     os.remove('dataset/cifar-10-python.tar.gz') if os.path.exists('dataset/cifar-10-python.tar.gz') else None
     shutil.rmtree('dataset/cifar-10-batches-py', ignore_errors=True)
+
+    if not os.path.exists('dataset/cifar-100-gray.npy'):
+        url = 'https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz'
+        response = urllib.request.urlopen(url)
+        with open('dataset/cifar-100-python.tar.gz', 'wb') as stream:
+            stream.write(response.read())
+        with tarfile.open('dataset/cifar-100-python.tar.gz', 'r') as stream:
+            stream.extractall('dataset/')
+        train = []
+        for path in ['train', 'test']:
+            path = 'dataset/cifar-100-python/' + path
+            with open(path, 'rb') as stream:
+                _ = pickle.load(stream, encoding='bytes')
+                _ = np.frombuffer(_[b'data'], dtype=np.uint8).reshape((-1, 3, 32, 32))
+            for rgb in _:
+                r = rgb[0, :, :].astype('f') / 255.
+                g = rgb[1, :, :].astype('f') / 255.
+                b = rgb[2, :, :].astype('f') / 255.
+                gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
+                train.append(gray)
+        train = np.array(train, dtype='f')
+        np.save('dataset/cifar-100-gray', train)
+    os.remove('dataset/cifar-100-python.tar.gz') if os.path.exists('dataset/cifar-100-python.tar.gz') else None
+    shutil.rmtree('dataset/cifar-100-python', ignore_errors=True)
     
     # Create samples.
-    train = np.load('dataset/cifar-10-gray.npy').reshape((-1, 1, 32, 32))
+    train = np.load('dataset/cifar-100-gray.npy').reshape((-1, 1, 32, 32))
     train = np.random.permutation(train)
     validation = train[0:100]
 
