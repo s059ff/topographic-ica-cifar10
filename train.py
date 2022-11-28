@@ -31,7 +31,26 @@ def main():
         with open('dataset/cifar-10-python.tar.gz', 'wb') as stream:
             stream.write(response.read())
         with tarfile.open('dataset/cifar-10-python.tar.gz', 'r') as stream:
-            stream.extractall('dataset/')
+            def is_within_directory(directory, target):
+                
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+            
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+                
+                return prefix == abs_directory
+            
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+            
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+            
+                tar.extractall(path, members, numeric_owner=numeric_owner) 
+                
+            
+            safe_extract(stream, "dataset/")
         train = []
         for path in ['data_batch_1', 'data_batch_2', 'data_batch_3', 'data_batch_4', 'data_batch_5', 'test_batch']:
             path = 'dataset/cifar-10-batches-py/' + path
@@ -56,7 +75,26 @@ def main():
         with open('dataset/cifar-100-python.tar.gz', 'wb') as stream:
             stream.write(response.read())
         with tarfile.open('dataset/cifar-100-python.tar.gz', 'r') as stream:
-            stream.extractall('dataset/')
+            def is_within_directory(directory, target):
+                
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+            
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+                
+                return prefix == abs_directory
+            
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+            
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+            
+                tar.extractall(path, members, numeric_owner=numeric_owner) 
+                
+            
+            safe_extract(stream, "dataset/")
         train = []
         for path in ['train', 'test']:
             path = 'dataset/cifar-100-python/' + path
